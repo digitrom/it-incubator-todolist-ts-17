@@ -1,8 +1,8 @@
-import { todolistsAPI, TodolistType } from "../../api/todolists-api"
+import { todolistsAPI, TodolistType } from "api/todolists-api"
 import { Dispatch } from "redux"
-import { RequestStatusType, SetAppErrorActionType, setAppStatusAC, SetAppStatusActionType } from "../../app/app-reducer"
-import { handleServerNetworkError } from "../../utils/error-utils"
-import { AppThunk } from "../../app/store"
+import { RequestStatusType } from "app/app-reducer"
+import { handleServerNetworkError } from "utils/error-utils"
+import { AppThunk } from "app/store"
 
 const initialState: Array<TodolistDomainType> = []
 
@@ -31,7 +31,8 @@ export const todolistsReducer = (
 
 // actions
 export const removeTodolistAC = (id: string) => ({ type: "REMOVE-TODOLIST", id }) as const
-export const addTodolistAC = (todolist: TodolistType) => ({ type: "ADD-TODOLIST", todolist }) as const
+export const addTodolistAC = (todolist: TodolistType) =>
+  ({ type: "ADD-TODOLIST", todolist }) as const
 export const changeTodolistTitleAC = (id: string, title: string) =>
   ({
     type: "CHANGE-TODOLIST-TITLE",
@@ -50,7 +51,8 @@ export const changeTodolistEntityStatusAC = (id: string, status: RequestStatusTy
     id,
     status,
   }) as const
-export const setTodolistsAC = (todolists: Array<TodolistType>) => ({ type: "SET-TODOLISTS", todolists }) as const
+export const setTodolistsAC = (todolists: Array<TodolistType>) =>
+  ({ type: "SET-TODOLISTS", todolists }) as const
 
 // thunks
 export const fetchTodolistsTC = (): AppThunk => {
@@ -113,4 +115,4 @@ export type TodolistDomainType = TodolistType & {
   filter: FilterValuesType
   entityStatus: RequestStatusType
 }
-type ThunkDispatch = Dispatch<ActionsType | SetAppStatusActionType | SetAppErrorActionType>
+type ThunkDispatch = Dispatch<ActionsType
