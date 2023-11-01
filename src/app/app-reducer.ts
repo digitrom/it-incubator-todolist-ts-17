@@ -38,3 +38,5 @@ export const initializeAppTC = (): AppThunk => (dispatch) => {
 
 export const appReducer = slice.reducer
 export const appActions = slice.actions
+
+export type InitialStateType = ReturnType<typeof slice.getInitialState>
