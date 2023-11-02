@@ -1,20 +1,8 @@
-import {
-  AddTodolistActionType,
-  RemoveTodolistActionType,
-  SetTodolistsActionType,
-} from "./todolists-reducer"
-import {
-  TaskPriorities,
-  TaskStatuses,
-  TaskType,
-  todolistsAPI,
-  UpdateTaskModelType,
-} from "api/todolists-api"
+import { TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType } from "api/todolists-api"
 import { Dispatch } from "redux"
 import { AppThunk } from "app/store"
-
 import { handleServerAppError, handleServerNetworkError } from "utils/error-utils"
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit"
 import { appActions } from "app/app-reducer"
 
 const initialState: TasksStateType = {}
@@ -28,10 +16,7 @@ export const slice = createSlice({
   },
 })
 
-export const tasksReducer = (
-  state: TasksStateType = initialState,
-  action: ActionsType,
-): TasksStateType => {
+export const tasksReducer = (state: TasksStateType = initialState, action: ActionsType): TasksStateType => {
   switch (action.type) {
     case "REMOVE-TASK":
       return {
@@ -58,7 +43,7 @@ export const tasksReducer = (
       return copyState
     case "SET-TODOLISTS": {
       const copyState = { ...state }
-      action.todolists.forEach((tl) => {
+      action.todolists.forEach((tl: any) => {
         copyState[tl.id] = []
       })
       return copyState
@@ -72,11 +57,8 @@ export const tasksReducer = (
 
 // actions
 export const addTaskAC = (task: TaskType) => ({ type: "ADD-TASK", task }) as const
-export const updateTaskAC = (
-  taskId: string,
-  model: UpdateDomainTaskModelType,
-  todolistId: string,
-) => ({ type: "UPDATE-TASK", model, todolistId, taskId }) as const
+export const updateTaskAC = (taskId: string, model: UpdateDomainTaskModelType, todolistId: string) =>
+  ({ type: "UPDATE-TASK", model, todolistId, taskId }) as const
 export const setTasksAC = (tasks: Array<TaskType>, todolistId: string) =>
   ({ type: "SET-TASKS", tasks, todolistId }) as const
 
@@ -167,7 +149,6 @@ export type UpdateDomainTaskModelType = {
 export type TasksStateType = {
   [key: string]: Array<TaskType>
 }
-type ActionsType = AddTodolistActionType | RemoveTodolistActionType | SetTodolistsActionType
 
 export const tasksReducers = slice.reducer
 export const tasksActions = slice.actions
