@@ -4,6 +4,7 @@ import { handleServerAppError, handleServerNetworkError } from "utils/error-util
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { appActions } from "app/app-reducer"
 import { todolistsActions } from "features/TodolistsList/todolists-reducer"
+import { clearTasksAndTodolists } from "common/actions/common.actions"
 
 export const slice = createSlice({
   name: "tasks",
@@ -47,6 +48,9 @@ export const slice = createSlice({
         action.payload.todolists.forEach((tl: any) => {
           state[tl.id] = []
         })
+      })
+      .addCase(clearTasksAndTodolists, () => {
+        return {}
       })
   },
 })
