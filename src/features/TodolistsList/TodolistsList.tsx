@@ -8,14 +8,14 @@ import {
   removeTodolistTC,
   todolistsActions,
 } from "./todolists-reducer"
-import { removeTaskTC, tasksThunks } from "./tasks-reducer"
-import { TaskStatuses } from "api/todolists-api"
+import { tasksThunks } from "./tasks-reducer"
+import { TaskStatuses } from "../../common/enums/enums"
 import { Grid, Paper } from "@mui/material"
-import { AddItemForm } from "components/AddItemForm/AddItemForm"
+import { AddItemForm } from "common/components/AddItemForm/AddItemForm"
 import { Todolist } from "./Todolist/Todolist"
 import { Navigate } from "react-router-dom"
-import { useAppDispatch } from "hooks/useAppDispatch"
-import { selectIsLoggedIn } from "features/Login/auth.selectors"
+import { useAppDispatch } from "common/hooks/useAppDispatch"
+import { selectIsLoggedIn } from "features/auth/model/auth.selectors"
 import { selectTasks } from "features/TodolistsList/tasks.selectors"
 import { selectTodolists } from "features/TodolistsList/todolists.selectors"
 
@@ -38,9 +38,8 @@ export const TodolistsList: React.FC<PropsType> = ({ demo = false }) => {
     dispatch(thunk)
   }, [])
 
-  const removeTask = useCallback(function (id: string, todolistId: string) {
-    const thunk = removeTaskTC(id, todolistId)
-    dispatch(thunk)
+  const removeTask = useCallback(function (taskId: string, todolistId: string) {
+    dispatch(tasksThunks.removeTask({ taskId, todolistId }))
   }, [])
 
   const addTask = useCallback(function (title: string, todolistId: string) {

@@ -4,7 +4,7 @@ import { AnyAction, combineReducers } from "redux"
 import { ThunkAction, ThunkDispatch } from "redux-thunk"
 import { appReducer } from "./app-reducer"
 import { configureStore } from "@reduxjs/toolkit"
-import { authReducer } from "features/Login/auth-reducer"
+import { authReducer } from "features/auth/model/auth-reducer"
 
 const rootReducer = combineReducers({
   tasks: tasksReducer,

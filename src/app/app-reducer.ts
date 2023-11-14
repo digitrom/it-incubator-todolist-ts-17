@@ -1,7 +1,7 @@
-import { authAPI } from "api/todolists-api"
-import { authActions } from "features/Login/auth-reducer"
+import { authActions } from "features/auth/model/auth-reducer"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { AppThunk } from "app/store"
+import { authAPI } from "../features/auth/api/authApi"
 
 const slice = createSlice({
   name: "app",

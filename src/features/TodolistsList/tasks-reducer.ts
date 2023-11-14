@@ -1,31 +1,16 @@
-import {
-  CreateTaskArg,
-  TaskPriorities,
-  TaskStatuses,
-  TaskType,
-  todolistsAPI,
-  UpdateTaskModelType,
-} from "api/todolists-api"
 import { AppThunk } from "app/store"
-import { handleServerAppError, handleServerNetworkError } from "utils/error-utils"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { appActions } from "app/app-reducer"
 import { todolistsActions } from "features/TodolistsList/todolists-reducer"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
-import { createAppAsyncThunk } from "../../utils/createAppAsyncThunk"
+import { createAppAsyncThunk, handleServerAppError, handleServerNetworkError } from "../../common/utils"
+import { CreateTaskArg, DeleteTaskArg, TaskType, todolistsAPI, UpdateTaskModelType } from "./todolistsApi"
+import { ResultCode, TaskPriorities, TaskStatuses } from "../../common/enums/enums"
 
 export const slice = createSlice({
   name: "tasks",
   initialState: {} as TasksStateType,
-  reducers: {
-    removeTask: (state, action: PayloadAction<{ taskId: string; todolistId: string }>) => {
-      const tasksForTodolist = state[action.payload.todolistId]
-      const index = tasksForTodolist.findIndex((task) => task.id === action.payload.taskId)
-      if (index !== -1) {
-        tasksForTodolist.splice(index, 1)
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchTasks.fulfilled, (state, action) => {
@@ -34,6 +19,13 @@ export const slice = createSlice({
       .addCase(addTask.fulfilled, (state, action) => {
         const tasksForTodolist = state[action.payload.task.todoListId]
         tasksForTodolist.unshift(action.payload.task)
+      })
+      .addCase(removeTask.fulfilled, (state, action) => {
+        const tasksForTodolist = state[action.payload.todolistId]
+        const index = tasksForTodolist.findIndex((task) => task.id === action.payload.taskId)
+        if (index !== -1) {
+          tasksForTodolist.splice(index, 1)
+        }
       })
       .addCase(updateTask.fulfilled, (state, action) => {
         const tasksForTodolist = state[action.payload.todolistId]
@@ -77,6 +69,36 @@ export const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[]; todolistId: s
     }
   },
 )
+
+export const removeTask = createAppAsyncThunk<DeleteTaskArg, DeleteTaskArg>(
+  `${slice.name}/removeTask`,
+  async (arg, thunkAPI) => {
+    const { dispatch, rejectWithValue } = thunkAPI
+    try {
+      dispatch(appActions.setAppStatus({ status: "loading" }))
+      const res = await todolistsAPI.deleteTask(arg)
+      if (res.data.resultCode === ResultCode.Success) {
+        dispatch(appActions.setAppStatus({ status: "succeeded" }))
+        return arg
+      } else {
+        handleServerAppError(res.data, dispatch)
+        return rejectWithValue(null)
+      }
+    } catch (e) {
+      handleServerNetworkError(e, dispatch)
+      return rejectWithValue(null)
+    }
+  },
+)
+
+// export const removeTaskTC =
+//     (taskId: string, todolistId: string): AppThunk =>
+//         (dispatch) => {
+//           todolistsAPI.deleteTask(todolistId, taskId).then(() => {
+//             dispatch(tasksActions.removeTask({ taskId, todolistId }))
+//           })
+//         }
+
 export const addTask = createAppAsyncThunk<{ task: TaskType }, CreateTaskArg>(
   `${slice.name}/addTask`,
   async (arg, thunkAPI) => {
@@ -140,14 +162,6 @@ export const updateTask = createAppAsyncThunk<UpdateTaskArg, UpdateTaskArg>(
   },
 )
 
-export const removeTaskTC =
-  (taskId: string, todolistId: string): AppThunk =>
-  (dispatch) => {
-    todolistsAPI.deleteTask(todolistId, taskId).then(() => {
-      dispatch(tasksActions.removeTask({ taskId, todolistId }))
-    })
-  }
-
 // types
 export type UpdateDomainTaskModelType = {
   title?: string
@@ -163,4 +177,4 @@ export type TasksStateType = {
 
 export const tasksReducer = slice.reducer
 export const tasksActions = slice.actions
-export const tasksThunks = { fetchTasks, addTask, updateTask }
+export const tasksThunks = { fetchTasks, addTask, updateTask, removeTask }
