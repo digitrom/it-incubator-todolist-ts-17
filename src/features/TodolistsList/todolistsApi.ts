@@ -1,13 +1,12 @@
 import { instance } from "../../common/api/instance"
-import { ResponseType } from "../../common/types/commonTypes"
+import { ResponseType } from "../../common/types"
 
 import { UpdateDomainTaskModelType } from "./tasks-reducer"
 import { TaskPriorities, TaskStatuses } from "../../common/enums/enums"
 
 export const todolistsAPI = {
   getTodolists() {
-    const promise = instance.get<TodolistType[]>("todo-lists")
-    return promise
+    return instance.get<TodolistType[]>("todo-lists")
   },
   createTodolist(title: string) {
     const promise = instance.post<ResponseType<{ item: TodolistType }>>("todo-lists", { title: title })
