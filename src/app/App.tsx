@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { initializeAppTC } from "./app-reducer"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Login } from "features/auth/ui/Login"
-import { logoutTC } from "features/auth/model/auth-reducer"
+import { authThunk } from "features/auth/model/auth-reducer"
 import {
   AppBar,
   Button,
@@ -36,7 +36,7 @@ function App({ demo = false }: PropsType) {
   }, [])
 
   const logoutHandler = useCallback(() => {
-    dispatch(logoutTC())
+    dispatch(authThunk.logout())
   }, [])
 
   if (!isInitialized) {
