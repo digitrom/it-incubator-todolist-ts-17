@@ -1,7 +1,4 @@
-import { authActions } from "features/auth/model/auth-reducer"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { AppThunk } from "app/store"
-import { authAPI } from "../features/auth/api/authApi"
 
 const slice = createSlice({
   name: "app",
@@ -22,16 +19,6 @@ const slice = createSlice({
     },
   },
 })
-
-export const initializeAppTC = (): AppThunk => (dispatch) => {
-  authAPI.me().then((res) => {
-    if (res.data.resultCode === 0) {
-      dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }))
-    } else {
-    }
-    dispatch(appActions.setAppInitialized({ isInitialized: true }))
-  })
-}
 
 export type InitialStateType = ReturnType<typeof slice.getInitialState>
 export type RequestStatusType = "idle" | "loading" | "succeeded" | "failed"
