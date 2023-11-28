@@ -19,6 +19,8 @@ import {
 import { Menu } from "@mui/icons-material"
 import { selectIsInitialised, selectStatus } from "app/app.selectors"
 import { selectIsLoggedIn } from "features/auth/model/auth.selectors"
+import { bindActionCreators } from "redux"
+import { useActions } from "../common/hooks"
 
 type PropsType = {
   demo?: boolean
@@ -29,13 +31,15 @@ function App({ demo = false }: PropsType) {
   const isInitialized = useSelector(selectIsInitialised)
   const isLoggedIn = useSelector(selectIsLoggedIn)
   const dispatch = useDispatch<any>()
-
+  const { initializeApp, logout } = useActions(authThunk)
   useEffect(() => {
-    dispatch(authThunk.initializeApp())
+    // dispatch(authThunk.initializeApp())
+    // bindActionCreators(authThunk.initializeApp, dispatch)()
+    initializeApp()
   }, [])
 
   const logoutHandler = useCallback(() => {
-    dispatch(authThunk.logout())
+    logout()
   }, [])
 
   if (!isInitialized) {

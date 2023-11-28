@@ -1,5 +1,5 @@
 import { instance } from "../../common/api/instance"
-import { ResponseType } from "../../common/types"
+import { BaseResponseType } from "../../common/types"
 
 import { UpdateDomainTaskModelType } from "./tasks-reducer"
 import { TaskPriorities, TaskStatuses } from "../../common/enums/enums"
@@ -9,28 +9,30 @@ export const todolistsAPI = {
     return instance.get<TodolistType[]>("todo-lists")
   },
   createTodolist(title: string) {
-    const promise = instance.post<ResponseType<{ item: TodolistType }>>("todo-lists", { title: title })
+    const promise = instance.post<BaseResponseType<{ item: TodolistType }>>("todo-lists", { title: title })
     return promise
   },
   deleteTodolist(id: string) {
-    const promise = instance.delete<ResponseType>(`todo-lists/${id}`)
+    const promise = instance.delete<BaseResponseType>(`todo-lists/${id}`)
     return promise
   },
   updateTodolist(arg: updateTodolistArg) {
-    const promise = instance.put<ResponseType>(`todo-lists/${arg.id}`, { title: arg.title })
+    const promise = instance.put<BaseResponseType>(`todo-lists/${arg.id}`, { title: arg.title })
     return promise
   },
   getTasks(todolistId: string) {
     return instance.get<GetTasksResponse>(`todo-lists/${todolistId}/tasks`)
   },
   deleteTask(arg: DeleteTaskArg) {
-    return instance.delete<ResponseType>(`todo-lists/${arg.todolistId}/tasks/${arg.taskId}`)
+    return instance.delete<BaseResponseType>(`todo-lists/${arg.todolistId}/tasks/${arg.taskId}`)
   },
   createTask(arg: CreateTaskArg) {
-    return instance.post<ResponseType<{ item: TaskType }>>(`todo-lists/${arg.todolistId}/tasks`, { title: arg.title })
+    return instance.post<BaseResponseType<{ item: TaskType }>>(`todo-lists/${arg.todolistId}/tasks`, {
+      title: arg.title,
+    })
   },
   updateTask(todolistId: string, taskId: string, model: UpdateTaskModelType) {
-    return instance.put<ResponseType<TaskType>>(`todo-lists/${todolistId}/tasks/${taskId}`, model)
+    return instance.put<BaseResponseType<TaskType>>(`todo-lists/${todolistId}/tasks/${taskId}`, model)
   },
 }
 

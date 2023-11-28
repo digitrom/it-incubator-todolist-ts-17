@@ -1,3 +1,3 @@
-export type { ResponseType } from "./commonTypes"
+export type { BaseResponseType, FieldErrorType } from "./commonTypes"
 // export * from "./commonTypes"
 // экспорт всех

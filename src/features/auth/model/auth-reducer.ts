@@ -4,7 +4,8 @@ import { clearTasksAndTodolists } from "common/actions/common.actions"
 import { handleServerAppError, handleServerNetworkError } from "../../../common"
 import { authAPI } from "../api/authApi"
 import { LoginParamsType } from "../api/authApiTypes"
-import { createAppAsyncThunk } from "../../../common/utils"
+import { createAppAsyncThunk, thunkTryCatch } from "../../../common/utils"
+import { BaseResponseType } from "../../../common/types"
 
 const slice = createSlice({
   name: "auth",
@@ -26,26 +27,28 @@ const slice = createSlice({
   },
 })
 
-export const initializeApp = createAppAsyncThunk<{ isLoggedIn: true }, undefined>(
-  `${slice.name}/initializeApp`,
-  async (_, thunkAPI) => {
-    const { dispatch, rejectWithValue } = thunkAPI
-    try {
-      const res = await authAPI.me()
-      if (res.data.resultCode === 0) {
-        return { isLoggedIn: true }
-      } else {
-        handleServerAppError(res.data, dispatch)
-        return rejectWithValue(null)
-      }
-    } catch (e) {
-      handleServerNetworkError(e, dispatch)
-      return rejectWithValue(null)
-    } finally {
-      dispatch(appActions.setAppInitialized({ isInitialized: true }))
-    }
+export const initializeApp = createAppAsyncThunk<
+  {
+    isLoggedIn: boolean
   },
-)
+  undefined
+>(`${slice.name}/initializeApp`, async (_, thunkAPI) => {
+  const { dispatch, rejectWithValue } = thunkAPI
+  return thunkTryCatch(thunkAPI, async () => {
+    const res = await authAPI.me()
+    if (res.data.resultCode === 0) {
+      return { isLoggedIn: true }
+    } else {
+      // handleServerAppError(res.data, dispatch)
+      return rejectWithValue(null)
+    }
+  }).finally(() => {
+    dispatch(appActions.setAppInitialized({ isInitialized: true }))
+  })
+})
+// finally {
+//   dispatch(appActions.setAppInitialized({ isInitialized: true }))
+// }
 
 const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsType>(
   `${slice.name}/login`,
@@ -59,8 +62,9 @@ const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsType>(
         dispatch(appActions.setAppStatus({ status: "succeeded" }))
         return { isLoggedIn: true }
       } else {
-        handleServerAppError(res.data, dispatch)
-        return rejectWithValue(null)
+        const isShowAppError = !res.data.fieldsErrors.length
+        handleServerAppError(res.data, dispatch, false)
+        return rejectWithValue(res.data)
       }
     } catch (e) {
       handleServerNetworkError(e, dispatch)
